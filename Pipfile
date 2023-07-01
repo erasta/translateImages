@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 selenium = "*"
+pillow = "*"
+pdf2image = "*"
 
 [dev-packages]
 
