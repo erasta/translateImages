@@ -4,6 +4,8 @@ Uses coordinates of mouse clicks since some of the buttons are ghosts.
 
 ## Setup
 ```sh
+git clone https://github.com/erasta/translateImages.git
+cd translateImages
 pipenv shell && pipenv install
 ```
 ## Run

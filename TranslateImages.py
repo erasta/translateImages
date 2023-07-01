@@ -45,7 +45,7 @@ class TranslateImages:
 
         for filename in filename_list:
             file_button.send_keys(filename)
-            time.sleep(3)
+            time.sleep(10)
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "downloadButton")))#.get_attribute("src")
             click_point([725, 285]) # download 
             time.sleep(1)

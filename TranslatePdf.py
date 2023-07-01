@@ -11,20 +11,30 @@ class TranslatePdf:
         self.download_folder = download_folder or join(os.path.expanduser("~"), 'Downloads')
         self.temp_folder = temp_folder or join(os.getcwd(), 'images')
 
-    def go(self, pdf_file_name, pdf_output, from_lang = 'english', to_lang = 'hebrew'):
+    def go(self, pdf_input, pdf_output, from_lang = 'english', to_lang = 'hebrew', input_is_images_folder=False):
         self._makedir(self.temp_folder) # cleanup
         temp_in  = self._makedir(join(self.temp_folder, 'in'))
         temp_out  = self._makedir(join(self.temp_folder, 'out'))
 
-         # split to images
-        id = uuid.uuid4().hex
-        images = convert_from_path(pdf_file_name)
-        names = ['page_' + id + '_' + str(i) for i in range(len(images))]
-        for i, n in enumerate(names):
-            images[i].save(join(temp_in, n + '.png'), 'PNG')
+        input_names = []
+        names = []
+        if input_is_images_folder:
+            for n in sorted(os.listdir(pdf_input)):
+                barename = os.path.splitext(n)[0]
+                names.append(barename)
+                input_names.append(join(pdf_input, n))                
+        else:
+            # split to images
+            id = uuid.uuid4().hex
+            images = convert_from_path(pdf_input)
+            names = ['page_' + id + '_' + str(i) for i in range(len(images))]
+            for i, n in enumerate(names):
+                n0 = join(temp_in, n + '.png')
+                input_names.append(n0)
+                images[i].save(n0, 'PNG')
 
         # translate images in folder, out to download folder
-        TranslateImages(from_lang, to_lang).go([join(temp_in, n + '.png') for n in names])
+        TranslateImages(from_lang, to_lang).go(input_names)
 
         # move from download folder to temp out folder 
         for n in names:
@@ -45,4 +55,5 @@ class TranslatePdf:
 
 
 if __name__ == '__main__':
-    TranslatePdf().go('sample.pdf', 'output.pdf')
+    # TranslatePdf().go('sample.pdf', 'output.pdf')
+    TranslatePdf().go('/home/eran/Downloads/Photos-001 (3)', 'output.pdf', from_lang='bulgarian', to_lang='english', input_is_images_folder=True)
