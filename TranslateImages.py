@@ -7,6 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 class TranslateImages:
+    def __init__(self, from_lang = 'english', to_lang = 'hebrew') -> None:
+        self.from_lang = from_lang
+        self.to_lang = to_lang
+
     def go(self, filename_list):
         driver = webdriver.Chrome()
         driver.get("https://translate.yandex.com/en/ocr?source_lang=he&target_lang=en")
@@ -28,13 +32,13 @@ class TranslateImages:
         click_point([400, 290]) # from language
 
         lang_element = driver.find_element(By.XPATH, '//input[@data-ref-id="searchInput"]')
-        lang_element.send_keys('english')
+        lang_element.send_keys(self.from_lang)
         click_point([115, 390]) # choose language
 
         click_point([500, 280]) # to language
 
         lang_element = driver.find_element(By.XPATH, '//input[@data-ref-id="searchInput"]')
-        lang_element.send_keys('hebrew')
+        lang_element.send_keys(self.to_lang)
         click_point([115, 390]) # choose language        
 
         file_button = driver.find_element(By.ID, "fileInput")
