@@ -52,7 +52,7 @@ class TranslateImages:
         driver.quit()
 
 if __name__ == '__main__':
-    folder = "/home/eran/Downloads/Scanned_20230516-1246"
+    folder = os.path.expanduser("~") + "/Downloads/Scanned_20230516-1246"
     files_in_folder = sorted(os.listdir(folder))
     files = [os.path.join(folder, f) for f in files_in_folder]
     TranslateImages().go(files)
