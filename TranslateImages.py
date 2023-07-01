@@ -9,21 +9,10 @@ import time
 class TranslateImages:
     def go(self, filename_list):
         driver = webdriver.Chrome()
-
         driver.get("https://translate.yandex.com/en/ocr?source_lang=he&target_lang=en")
-
         self.actions = ActionChains(driver)
 
         [x0, y0] = [33, 184]
-        points = [
-            [400, 290],
-            [130, 730],
-            [500, 280],
-            [130, 1040]
-        ]
-        download_point = [725, 285]
-        clear_point = [810, 285]
-
         [self.xp, self.yp] = [0, 0]
 
         def click_point(p):
@@ -34,9 +23,19 @@ class TranslateImages:
             [self.xp, self.yp] = [x1, y1]
             self.actions.move_by_offset(xm, ym)
             self.actions.click().perform()
+            time.sleep(0.1)
 
-        for p in points:
-            click_point(p)
+        click_point([400, 290]) # from language
+
+        lang_element = driver.find_element(By.XPATH, '//input[@data-ref-id="searchInput"]')
+        lang_element.send_keys('english')
+        click_point([115, 390]) # choose language
+
+        click_point([500, 280]) # to language
+
+        lang_element = driver.find_element(By.XPATH, '//input[@data-ref-id="searchInput"]')
+        lang_element.send_keys('hebrew')
+        click_point([115, 390]) # choose language        
 
         file_button = driver.find_element(By.ID, "fileInput")
 
@@ -44,9 +43,9 @@ class TranslateImages:
             file_button.send_keys(filename)
             time.sleep(3)
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "downloadButton")))#.get_attribute("src")
-            click_point(download_point)
+            click_point([725, 285]) # download 
             time.sleep(1)
-            click_point(clear_point)
+            click_point([810, 285]) # clear
             time.sleep(1)
 
         driver.quit()
