@@ -21,7 +21,7 @@ def hconcat(images):
     for im in images:
         new_im.paste(im, (offsets[-1], 0))
         offsets.append(offsets[-1] + im.size[0])
-    return new_im, offsets
+    return new_im, offsets[:-1]
 
 def vconcat(images):
     widths, heights = zip(*(i.size for i in images))
@@ -30,7 +30,7 @@ def vconcat(images):
     for im in images:
         new_im.paste(im, (0, offsets[-1]))
         offsets.append(offsets[-1] + im.size[1])
-    return new_im, offsets
+    return new_im, offsets[:-1]
 
 def partition(lst, n):
     return [lst[i:i + n] for i in range(0, len(lst), n)]
@@ -74,6 +74,11 @@ def MergePdfImages(pdfFileNames, output_folder=None):
         print('on ', name, ' got ', rects)
         im.save(name)
             
+def combineImagesToPdf(imagesFileNames, pdfFileName):
+    # Combine images to pdf
+    out_images = [Image.open(n) for n in imagesFileNames]
+    out_images[0].save(pdfFileName, "PDF", resolution=150.0, save_all=True, append_images=out_images[1:])
+
 def CombineTranslatedPdf(pdfFileNames, input_orig_images=None, input_translated_images=None, output_pdfs=None):
     if input_orig_images is None:
         input_orig_images = join(os.getcwd(), 'merged')
@@ -91,10 +96,12 @@ def CombineTranslatedPdf(pdfFileNames, input_orig_images=None, input_translated_
     cols = 2
     index = 0
     p = partition(images, cols * rows)
+    curr_image_batch = []
+    batch_index = 0
     for i, images_in_tile in enumerate(p):
         im, rects = tileImages(images_in_tile, cols)
         name = join(input_orig_images, 'im__' + str(i) + '.png')
-        print('on ', name, ' got ', rects)
+        print('on', name, 'got', rects)
 
         name_trans = join(input_translated_images, 'im__' + str(i) + '.png')
         im_trans = Image.open(name_trans)
@@ -105,11 +112,19 @@ def CombineTranslatedPdf(pdfFileNames, input_orig_images=None, input_translated_
             imboth, _ = hconcat([im0, im1])
             name_temp = join(temp_folder, 'im_' + str(index) + '.jpg')
             index += 1
+            print ('saving', name_temp, (x0, y0, x1, y1))
             imboth.save(name_temp)
+            curr_image_batch.append(name_temp)
+            if index % 20 == 0:
+                batch_index += 1
+                pdf_name = join(output_pdfs, str(batch_index) + '.pdf')
+                print ('combining into', pdf_name)
+                combineImagesToPdf(curr_image_batch, pdf_name)
+                curr_image_batch = []
+
         # im.save(name)
         # imr, _ = hconcat([im, im_trans])
-        # imr.save(name_temp)
-        
+        # imr.save(name_temp)        
             
 
 
