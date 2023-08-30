@@ -122,6 +122,12 @@ def CombineTranslatedPdf(pdfFileNames, input_orig_images=None, input_translated_
                 combineImagesToPdf(curr_image_batch, pdf_name)
                 curr_image_batch = []
 
+    batch_index += 1
+    pdf_name = join(output_pdfs, str(batch_index) + '.pdf')
+    print ('combining into', pdf_name)
+    combineImagesToPdf(curr_image_batch, pdf_name)
+    curr_image_batch = []
+
         # im.save(name)
         # imr, _ = hconcat([im, im_trans])
         # imr.save(name_temp)        
